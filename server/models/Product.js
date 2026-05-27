@@ -32,7 +32,7 @@ const ProductSchema = new mongoose.Schema({
     type: String // e.g., ['Minimalist', 'Boho Chic', 'Streetwear', 'Evening Wear', 'Ethnic']
   }],
   
-  // Relative file pathway to the local image (e.g., '/images/products/lipstick1.jpg')
+  // Relative file pathway to the local image
   imageUrl: { 
     type: String, 
     required: true 
@@ -49,14 +49,29 @@ const ProductSchema = new mongoose.Schema({
     
     // Fields populated if item is 'Makeup'
     shadeName: { type: String }, // 'Ruby Red', 'Nude Flash'
-    shadeHex: { type: String },  // Hex codes (e.g., '#B31B1B') for rendering UI swatches
+    shadeHex: { type: String },  // Hex codes for rendering UI swatches
     
     // Fields populated if item is 'Accessories'
     material: { type: String } // '18K Gold Plated', '925 Silver', 'Vegan Leather'
   }]
 }, { timestamps: true });
 
-// Create text index on name, brand, and styleTags to support rapid keyword searching for our AI Stylist
-ProductSchema.index({ name: 'text', brand: 'text', styleTags: 'text' });
+// -----------------------------------------------------------------
+// DYNAMIC TEXT INDEX WITH WEIGHTS (UPDATED)
+// -----------------------------------------------------------------
+ProductSchema.index({ 
+  name: 'text', 
+  brand: 'text', 
+  styleTags: 'text',
+  description: 'text' 
+}, {
+  weights: {
+    name: 4,
+    styleTags: 3,
+    brand: 2,
+    description: 1
+  },
+  name: "TextSearchIndex"
+});
 
 module.exports = mongoose.model('Product', ProductSchema);

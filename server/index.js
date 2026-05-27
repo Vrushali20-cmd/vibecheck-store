@@ -1,50 +1,39 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
+const dotenv = require('dotenv');
 
+dotenv.config();
 
-// ROUTE IMPORTS (Duplicates Removed)
+const app = express();
 
+// Middlewares
+app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(express.json());
+
+// -----------------------------------------------------------------
+// ROUTING LAYER: Mounting your predefined route files
+// -----------------------------------------------------------------
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 
-const app = express();
+// Make sure these base paths map directly to what Axios expects
+app.use('/api/auth', authRoutes);         // Handles registration & login
+app.use('/api/products', productRoutes); // Handles fetching the catalog feed
+app.use('/api/ai', aiRoutes);             // Handles the Gemini chatbot traffic
+
+// -----------------------------------------------------------------
+// DATABASE CONNECTION & LISTEN
+// -----------------------------------------------------------------
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/vibecheck';
 const PORT = process.env.PORT || 5000;
 
-
-// MIDDLEWARE
-
-app.use(cors());
-app.use(express.json()); 
-
-
-// MONGO_DB CONNECTION
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('🚀 Connected to MongoDB successfully!'))
+mongoose.connect(MONGO_URI)
+  .then(() => {
+    console.log('🏁 Connected to MongoDB successfully.');
+    app.listen(PORT, () => console.log(`🚀 Backend listening on port ${PORT}`));
+  })
   .catch((err) => {
-    console.error('❌ MongoDB connection error:');
-    console.error(err.message);
-    console.log('\n👉 Make sure your local MongoDB service is running! Run: "mongod" in a separate terminal.');
+    console.error('🚨 MongoDB Connection Error:', err.message);
   });
-
-
-// API ROUTES (Organized and Cleaned)
-
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/ai', aiRoutes);
-
-// HEALTH CHECK ROUTE
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'healthy', message: 'Backend engine is running smoothly.' });
-});
-
-// ==========================================
-// START SERVER
-// ==========================================
-app.listen(PORT, () => {
-  console.log(`📡 Server running on port ${PORT}`);
-});
