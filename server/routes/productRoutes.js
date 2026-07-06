@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const productController = require('../controllers/productController');
-const protect = require('../middleware/authMiddleware');
+// Yahan dhyan se dekh, direct object destructuring use kar raha hoon
+const { getAllProducts, getPersonalizedFeed } = require('../controllers/productController');
 
-// Public route: Anyone can browse the catalog
-router.get('/', productController.getAllProducts);
-
-// Protected route: Requires a valid JWT token to get a personalized feed
-router.get('/feed', protect, productController.getPersonalizedFeed);
+// Ab direct functions pass karo, koi dot notation ka jhanjhat nahi
+router.get('/', getAllProducts);
+router.get('/feed', getPersonalizedFeed);
 
 module.exports = router;

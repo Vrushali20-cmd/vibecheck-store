@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
-
+const path = require('path');
 dotenv.config();
 
 const app = express();
@@ -10,6 +10,8 @@ const app = express();
 // Middlewares
 app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
+
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 // -----------------------------------------------------------------
 // ROUTING LAYER: Mounting your predefined route files

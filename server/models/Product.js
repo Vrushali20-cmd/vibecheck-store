@@ -21,11 +21,11 @@ const ProductSchema = new mongoose.Schema({
   },
   
   // Core categorization
-  category: { 
-    type: String, 
-    required: true, 
-    enum: ['Clothing', 'Makeup', 'Accessories'] 
-  },
+  category: {
+  type: String,
+  required: true,
+  enum: ['Clothing', 'Makeup', 'Accessories', 'Dresses', 'Bags', 'Shoes'] 
+},
   
   // Style markers that the AI and personalization query engine will match against
   styleTags: [{ 
