@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-const API = 'http://localhost:5000/api/wishlist';
+const API = 'https://vibecheck-backend-hyhv.onrender.com/api/wishlist';
 
 const authHeader = () => ({
   headers: { Authorization: `Bearer ${localStorage.getItem('vibe_token')}` },

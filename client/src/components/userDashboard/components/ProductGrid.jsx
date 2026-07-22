@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { IconHeart } from './Icons';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://vibecheck-backend-hyhv.onrender.com';
 
 const ProductGrid = ({ products, loading, wishlist, onToggleWishlist, onAddToCart, onBuyNow }) => {
   const navigate = useNavigate();

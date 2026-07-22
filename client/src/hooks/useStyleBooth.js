@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { LOOK_CATEGORIES, OCCASION_STYLE_TAGS } from '../components/StyleBooth/constants';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://vibecheck-backend-hyhv.onrender.com';
 
 /**
  * Scores a product against target style tags.

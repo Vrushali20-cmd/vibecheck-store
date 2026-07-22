@@ -21,7 +21,7 @@ export const useProducts = (activeTab, filters = {}) => {
         if (filters.sort)     params.set('sort',      filters.sort);
 
         const res = await axios.get(
-          `http://localhost:5000/api/products?${params.toString()}`,
+          `https://vibecheck-backend-hyhv.onrender.com/api/products?${params.toString()}`,
           { cancelToken: source.token }
         );
         setProducts(Array.isArray(res.data) ? res.data : []);

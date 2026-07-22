@@ -1,6 +1,6 @@
 import MatchBadge from './MatchBadge';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://vibecheck-backend-hyhv.onrender.com';
 
 const OutfitCard = ({ label, emoji, item }) => {
   // item can be null if backend returned no products for this category

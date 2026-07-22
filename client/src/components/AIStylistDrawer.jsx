@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import API from '../api/axiosConfig';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://vibecheck-backend-hyhv.onrender.com';
 
 const ProductPill = ({ product }) => {
   const imgSrc = product.imageUrl?.startsWith('http')

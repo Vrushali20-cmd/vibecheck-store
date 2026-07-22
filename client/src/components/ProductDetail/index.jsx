@@ -33,7 +33,7 @@ const ProductDetail = ({ onAddToCart, onCartOpen }) => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
+        const { data } = await axios.get(`https://vibecheck-backend-hyhv.onrender.com/api/products/${id}`);
         setProduct(data);
         if (data.variants?.length) {
           const first = data.variants[0];

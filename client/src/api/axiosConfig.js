@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://vibecheck-backend-hyhv.onrender.com/api',
 });
 
 // Auto-attach JWT token to every single backend request

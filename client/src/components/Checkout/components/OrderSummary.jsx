@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://vibecheck-backend-hyhv.onrender.com';
 const FREE_SHIPPING_ABOVE = 999;
 const SHIPPING_FEE = 99;
 

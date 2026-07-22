@@ -13,7 +13,7 @@ const OrderSuccess = () => {
 
   useEffect(() => {
     if (!state?.orderId) { navigate('/dashboard'); return; }
-    axios.get(`http://localhost:5000/api/orders/${state.orderId}`, authHeader())
+    axios.get(`https://vibecheck-backend-hyhv.onrender.com/api/orders/${state.orderId}`, authHeader())
       .then(({ data }) => setOrder(data))
       .catch(() => {});
   }, [state, navigate]);

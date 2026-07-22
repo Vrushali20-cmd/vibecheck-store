@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://vibecheck-backend-hyhv.onrender.com';
 
 const ImageSection = ({ product }) => {
   const imgSrc = product.imageUrl?.startsWith('http')

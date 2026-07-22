@@ -4,7 +4,7 @@ import axios from 'axios';
 import AddressForm  from './components/AddressForm';
 import OrderSummary from './components/OrderSummary';
 
-const API = 'http://localhost:5000/api/payment';
+const API = 'https://vibecheck-backend-hyhv.onrender.com/api/payment';
 
 const authHeader = () => ({
   headers: { Authorization: `Bearer ${localStorage.getItem('vibe_token')}` },
