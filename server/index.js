@@ -7,7 +7,12 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://vibecheck-store-psi.vercel.app'
+  ]
+}));
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
