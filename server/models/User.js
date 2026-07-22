@@ -1,30 +1,17 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-  name: { 
-    type: String, 
-    required: true, 
-    trim: true 
-  },
-  email: { 
-    type: String, 
-    required: true, 
-    unique: true, 
-    trim: true,
-    lowercase: true
-  },
-  password: { 
-    type: String, 
-    required: true 
-  },
-  
-  
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, unique: true, trim: true, lowercase: true },
+  password: { type: String, required: true },
+
+  // Wishlist — stores product index (since we use data.json not MongoDB)
+  wishlist: [{ type: String }],
+
   preferences: {
-    preferredStyles: [{ 
-      type: String
-    }],
-    skinType: { 
-      type: String, 
+    preferredStyles:  [{ type: String }],
+    skinType: {
+      type: String,
       enum: ['Oily', 'Dry', 'Combination', 'Normal', 'Sensitive', 'Not Specified'],
       default: 'Not Specified'
     },
@@ -33,9 +20,7 @@ const UserSchema = new mongoose.Schema({
       enum: ['Warm', 'Cool', 'Neutral', 'Not Specified'],
       default: 'Not Specified'
     },
-    apparelSizes: [{ 
-      type: String 
-    }]
+    apparelSizes: [{ type: String }]
   }
 }, { timestamps: true });
 

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export const useProducts = (activeTab) => {
+export const useProducts = (activeTab, filters = {}) => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading,  setLoading]  = useState(true);
 
   useEffect(() => {
     const source = axios.CancelToken.source();
@@ -11,15 +11,25 @@ export const useProducts = (activeTab) => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost:5000/api/products?category=${activeTab}`, {
-          cancelToken: source.token
-        });
+        // Build query params
+        const params = new URLSearchParams();
+        if (activeTab)        params.set('category', activeTab);
+        if (filters.search)   params.set('search',   filters.search);
+        if (filters.minPrice) params.set('minPrice',  filters.minPrice);
+        if (filters.maxPrice) params.set('maxPrice',  filters.maxPrice);
+        if (filters.styleTag) params.set('styleTag',  filters.styleTag);
+        if (filters.sort)     params.set('sort',      filters.sort);
+
+        const res = await axios.get(
+          `http://localhost:5000/api/products?${params.toString()}`,
+          { cancelToken: source.token }
+        );
         setProducts(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         if (axios.isCancel(err)) {
           console.log('Request canceled');
         } else {
-          console.error("Fetch Error:", err);
+          console.error('Fetch Error:', err);
           setProducts([]);
         }
       } finally {
@@ -27,10 +37,9 @@ export const useProducts = (activeTab) => {
       }
     };
 
-    if (activeTab) fetchProducts();
-
+    fetchProducts();
     return () => source.cancel();
-  }, [activeTab]); 
+  }, [activeTab, filters.search, filters.minPrice, filters.maxPrice, filters.styleTag, filters.sort]);
 
   return { products, loading };
 };

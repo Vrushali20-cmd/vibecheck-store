@@ -1,48 +1,48 @@
 import { useState, useMemo } from 'react';
-import { useProducts } from "../../hooks/useProducts";
+import { useNavigate } from 'react-router-dom';
+import { useProducts }  from '../../hooks/useProducts';
+import { useWishlist }  from '../../hooks/useWishlist';
 
 import { MOODS, GLOBAL_STYLES } from './constants';
 
-import TopBar          from './components/TopBar';
-import WelcomeBlock    from './components/WelcomeBlock';
-import PromoTicker     from './components/PromoTicker';
-import HeroBanner      from './components/HeroBanner';
-import RewardsCard     from './components/RewardsCard';
-import MoodSwitcher    from './components/MoodSwitcher';
-import CategoryTabs    from './components/CategoryTabs';
-import ProductGrid     from './components/ProductGrid';
-import StyleCouncil    from './components/StyleCouncil';
+import TopBar           from './components/TopBar';
+import WelcomeBlock     from './components/WelcomeBlock';
+import PromoTicker      from './components/PromoTicker';
+import HeroBanner       from './components/HeroBanner';
+import RewardsCard      from './components/RewardsCard';
+import MoodSwitcher     from './components/MoodSwitcher';
+import CategoryTabs     from './components/CategoryTabs';
+import SearchBar        from '../../components/SearchBar';
+import ProductGrid      from './components/ProductGrid';
+import StyleCouncil     from './components/StyleCouncil';
 import AIStyleAssembler from './components/AIStyleAssembler';
-import FloatingButton  from './components/FloatingButton';
+import FloatingButton   from './components/FloatingButton';
 
-export default function UserDashboard({ setChatOpen }) {
+export default function UserDashboard({ setChatOpen, onAddToCart, onCartOpen }) {
+  const navigate = useNavigate();
 
-  // ── State ────────────────────────────────────────────────────────────────
-  const [activeMood,         setActiveMood]         = useState('Soft Girl');
-  const [wishlist,           setWishlist]           = useState([]);
-  const [activeTab,          setActiveTab]          = useState('Dresses');
-  const [notificationCount,  setNotificationCount]  = useState(3);
-  const [isDarkMode,         setIsDarkMode]         = useState(false);
+  // ── State ─────────────────────────────────────────────────────────────────
+  const [activeMood,        setActiveMood]        = useState('Soft Girl');
+  const [activeTab,         setActiveTab]         = useState('Dresses');
+  const [notificationCount, setNotificationCount] = useState(3);
+  const [isDarkMode,        setIsDarkMode]        = useState(false);
+  const [filters,           setFilters]           = useState({
+    search: '', minPrice: '', maxPrice: '', styleTag: '', sort: '',
+  });
 
-  // ── Backend data (unchanged wiring) ──────────────────────────────────────
-  const { products, loading } = useProducts(activeTab);
+  // ── Backend data ───────────────────────────────────────────────────────────
+  const { products, loading }              = useProducts(activeTab, filters);
+  const { wishlist, toggleWishlist }       = useWishlist();
 
-  // ── AI outfit state ───────────────────────────────────────────────────────
+  // ── AI outfit state ────────────────────────────────────────────────────────
   const [aiOutfitBase, setAiOutfitBase] = useState('Beige Pleated Skirt');
   const [aiSuggestions, setAiSuggestions] = useState([
-    { part: 'Top',       name: 'Pastel Cardigan Over-shirt',      matchScore: '98%' },
-    { part: 'Footwear',  name: 'Chunky Retro Canvas Platforms',   matchScore: '94%' },
+    { part: 'Top',       name: 'Pastel Cardigan Over-shirt',        matchScore: '98%' },
+    { part: 'Footwear',  name: 'Chunky Retro Canvas Platforms',     matchScore: '94%' },
     { part: 'Accessory', name: 'Metallic Butterfly Hair Clips Set', matchScore: '91%' },
   ]);
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
-  const toggleWishlist = (id) => {
-    setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-    if (!wishlist.includes(id)) setNotificationCount((prev) => prev + 1);
-  };
-
+  // ── Handlers ───────────────────────────────────────────────────────────────
   const triggerOutfitRec = (baseItem) => {
     setAiOutfitBase(baseItem);
     if (baseItem.includes('Skirt')) {
@@ -53,43 +53,47 @@ export default function UserDashboard({ setChatOpen }) {
       ]);
     } else {
       setAiSuggestions([
-        { part: 'Layering', name: 'Oversized Cropped Denim Trucker',  matchScore: '96%' },
+        { part: 'Layering', name: 'Oversized Cropped Denim Trucker',   matchScore: '96%' },
         { part: 'Boots',    name: 'High-Gloss Obsidian Combat Liners', matchScore: '92%' },
         { part: 'Eyewear',  name: 'Y2K Frameless Tinted Shades',       matchScore: '89%' },
       ]);
     }
   };
 
-  // ── Theme derivation (memoized — only reruns when mood/dark changes) ──────
+  const handleAddToCart = async (productId) => {
+    if (onAddToCart) {
+      await onAddToCart(productId);
+      onCartOpen && onCartOpen();
+    }
+  };
+
+  const handleBuyNow = async (productId) => {
+    if (onAddToCart) {
+      await onAddToCart(productId);
+      navigate('/checkout');
+    }
+  };
+
+  // ── Theme ──────────────────────────────────────────────────────────────────
   const mood = useMemo(() => MOODS[activeMood], [activeMood]);
+  const theme = useMemo(() => mood[isDarkMode ? 'dark' : 'light'], [mood, isDarkMode]);
+  const themeVars = useMemo(() => ({
+    '--mood-bg':      theme.bg,
+    '--mood-card':    theme.card,
+    '--mood-text':    theme.text,
+    '--mood-sub':     theme.sub,
+    '--mood-accent':  theme.accent,
+    '--mood-accent2': theme.accent2,
+    '--mood-border':  theme.border,
+    '--mood-radius':  mood.radius,
+    '--font-display': mood.display,
+    background: 'var(--mood-bg)',
+    color:      'var(--mood-text)',
+  }), [theme, mood]);
 
-  const theme = useMemo(
-    () => mood[isDarkMode ? 'dark' : 'light'],
-    [mood, isDarkMode]
-  );
-
-  const themeVars = useMemo(
-    () => ({
-      '--mood-bg':      theme.bg,
-      '--mood-card':    theme.card,
-      '--mood-text':    theme.text,
-      '--mood-sub':     theme.sub,
-      '--mood-accent':  theme.accent,
-      '--mood-accent2': theme.accent2,
-      '--mood-border':  theme.border,
-      '--mood-radius':  mood.radius,
-      '--font-display': mood.display,
-      background: 'var(--mood-bg)',
-      color:      'var(--mood-text)',
-    }),
-    [theme, mood]
-  );
-
-  // ── Render ────────────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div style={themeVars} className="min-h-screen transition-colors duration-500 font-sans">
-
-      {/* Static styles — defined at module level in constants.js, never rebuilt */}
       <style>{GLOBAL_STYLES}</style>
 
       <div className="fx-body pt-8 pb-32 px-4 md:px-8 max-w-7xl mx-auto relative">
@@ -102,10 +106,8 @@ export default function UserDashboard({ setChatOpen }) {
         />
 
         <WelcomeBlock />
-
         <PromoTicker />
 
-        {/* Hero + Rewards side-by-side */}
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
           <HeroBanner mood={mood} />
           <RewardsCard />
@@ -117,15 +119,27 @@ export default function UserDashboard({ setChatOpen }) {
           onSelect={setActiveMood}
         />
 
-        <CategoryTabs activeTab={activeTab} onSelect={setActiveTab} />
+        <CategoryTabs activeTab={activeTab} onSelect={(tab) => {
+          setActiveTab(tab);
+          setFilters({ search: '', minPrice: '', maxPrice: '', styleTag: '', sort: '' });
+        }} />
 
-        {/* Product grid wrapper — keeps the responsive grid cols here, not in the child */}
-        <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <SearchBar filters={filters} onChange={setFilters} />
+
+        {!loading && filters.search && (
+          <p className="mt-3 text-xs fx-mono" style={{ color: 'var(--mood-sub)' }}>
+            {products.length} result{products.length !== 1 ? 's' : ''} for "{filters.search}"
+          </p>
+        )}
+
+        <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <ProductGrid
             products={products}
             loading={loading}
             wishlist={wishlist}
             onToggleWishlist={toggleWishlist}
+            onAddToCart={handleAddToCart}
+            onBuyNow={handleBuyNow}
           />
         </div>
 
@@ -140,7 +154,6 @@ export default function UserDashboard({ setChatOpen }) {
       </div>
 
       <FloatingButton onClick={() => setChatOpen(true)} />
-
     </div>
   );
 }
